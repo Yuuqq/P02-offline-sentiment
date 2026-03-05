@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📰</text></svg>" />
+  <title>P02 本地离线情感倾向分析仪</title>
+    <link rel="stylesheet" href="../shared/design-tokens.css" />
+<link rel="stylesheet" href="./styles.css" />
+  <meta name="description" content="本地离线情感倾向分析仪。P02 本地离线情感倾向分析仪" />
+  <meta property="og:title" content="P02 本地离线情感倾向分析仪" />
+  <meta property="og:description" content="本地离线情感倾向分析仪 — 前端纯静态新闻工具" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yuuqq.github.io/P02-offline-sentiment/" />
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <h1>本地离线情感倾向分析仪</h1>
+      <p>Transformers.js 浏览器本地推理。首次联网加载模型，缓存后可离线继续使用。</p>
+      <p class="privacy">隐私: 文本不上传到你的服务器，分析在本地浏览器完成。</p>
+    </header>
+
+    <section class="card">
+      <label for="modelId">模型 ID（可改）</label>
+      <input id="modelId" type="text" value="Xenova/distilbert-base-uncased-finetuned-sst-2-english" />
+
+      <div class="actions">
+        <button id="loadBtn" type="button">1) 加载本地模型</button>
+        <button id="analyzeBtn" type="button" disabled>2) 分析文本</button>
+      </div>
+      <p id="status" aria-live="polite">状态: 未加载模型</p>
+    </section>
+
+    <section class="card">
+      <label for="textInput">新闻文本</label>
+      <textarea id="textInput" rows="10" placeholder="粘贴报道正文..."></textarea>
+      <p class="hint">说明: 默认对前 1500 字符分析，避免浏览器卡顿。</p>
+    </section>
+
+    <section class="card">
+      <h2>分析结果</h2>
+      <div id="summary">等待分析...</div>
+      <div class="bars">
+        <div class="bar-row">
+          <span>Positive</span>
+          <div class="bar-shell"><i id="posBar"></i></div>
+          <strong id="posVal">0%</strong>
+        </div>
+        <div class="bar-row">
+          <span>Negative</span>
+          <div class="bar-shell"><i id="negBar"></i></div>
+          <strong id="negVal">0%</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+    <script src="./pm-metrics.js" defer></script>
+<script type="module" src="./app.js" defer></script>
+
+  <!-- Cross-Project Navigation -->
+  <nav style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;font-size:13px;border-top:1px solid #e5e5e5;margin-top:16px;color:#666;">
+    <a href="https://yuuqq.github.io/_codex/" style="text-decoration:none;">📋 工具箱导航</a>
+    <span style="opacity:.4">P02</span>
+  </nav>
+
+  <!-- Privacy Notice -->
+  <div style="text-align:center;padding:12px 16px;font-size:12px;color:#888;border-top:1px solid #eee;margin-top:24px;">
+    🔒 隐私提示：本工具所有数据处理均在您的浏览器本地完成，不会上传任何数据至服务器。
+  </div></body>
+</html>
