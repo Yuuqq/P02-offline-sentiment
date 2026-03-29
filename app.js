@@ -1,4 +1,11 @@
-import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+
+// Use HuggingFace mirror for China accessibility
+env.remoteHost = "https://hf-mirror.com";
+env.remotePathTemplate = "{model}/resolve/{revision}/";
+// Allow remote models
+env.allowRemoteModels = true;
+env.allowLocalModels = false;
 
 const modelInput = document.getElementById("modelId");
 const loadBtn = document.getElementById("loadBtn");
@@ -26,7 +33,7 @@ function setBars(pos, neg) {
   negVal.textContent = `${n.toFixed(1)}%`;
 }
 
-loadBtn.addEventListener("click", async () => {
+async function loadModel() {
   const modelId = modelInput.value.trim();
   if (!modelId) {
     setStatus("模型 ID 不能为空");
@@ -35,18 +42,40 @@ loadBtn.addEventListener("click", async () => {
 
   loadBtn.disabled = true;
   analyzeBtn.disabled = true;
-  setStatus("正在加载模型（首次可能较慢）...");
+  setStatus("正在加载模型（首次可能需 30-60 秒）...");
 
-  try {
-    classifier = await pipeline("sentiment-analysis", modelId);
-    setStatus("模型已加载，可离线复用缓存");
-    analyzeBtn.disabled = false;
-  } catch (err) {
-    setStatus(`模型加载失败: ${err.message}`);
-  } finally {
-    loadBtn.disabled = false;
+  // Try HF mirror first, then original HuggingFace
+  const hosts = [
+    "https://hf-mirror.com",
+    "https://huggingface.co"
+  ];
+
+  for (const host of hosts) {
+    try {
+      env.remoteHost = host;
+      classifier = await pipeline("sentiment-analysis", modelId, {
+        progress_callback: (progress) => {
+          if (progress.status === "download" && progress.total) {
+            const pct = Math.round((progress.loaded / progress.total) * 100);
+            setStatus(`下载模型文件... ${pct}%`);
+          } else if (progress.status === "ready") {
+            setStatus("模型准备就绪");
+          }
+        }
+      });
+      setStatus("✅ 模型已加载，可离线复用缓存");
+      analyzeBtn.disabled = false;
+      return; // success
+    } catch (err) {
+      console.warn(`从 ${host} 加载失败:`, err.message);
+    }
   }
-});
+
+  setStatus("模型加载失败：请检查网络连接，或尝试更换模型 ID");
+  loadBtn.disabled = false;
+}
+
+loadBtn.addEventListener("click", loadModel);
 
 analyzeBtn.addEventListener("click", async () => {
   const text = textInput.value.trim();
@@ -96,7 +125,6 @@ analyzeBtn.addEventListener("click", async () => {
 (function() {
   try {
     if (!window.pmMetrics) return;
-    // Auto mark task start on first meaningful interaction
     let taskStarted = false;
     document.addEventListener('click', function(e) {
       if (taskStarted) return;
