@@ -234,3 +234,13 @@ document.querySelectorAll(".example-btn").forEach((btn) => {
     }, { once: false });
   } catch (_e) {}
 })();
+
+
+// === Auto-load demo text ===
+(function() {
+  const ta = document.getElementById('inputText') || document.querySelector('textarea');
+  if (ta && !ta.value.trim()) {
+    ta.value = '今天天气真好，阳光明媚，心情非常愉快！但是昨天的新闻让人非常担忧，经济数据持续下滑，失业率创新高。不过政府已经出台了一系列刺激措施，专家认为下半年有望恢复增长。总体来说，虽然面临挑战，但前景可期。';
+    ta.dispatchEvent(new Event('input', {bubbles:true}));
+  }
+})();
