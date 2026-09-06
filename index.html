@@ -11,7 +11,16 @@
   <meta property="og:description" content="离线情感分析仪">
     <title>P02 离线情感分析仪</title>
     <link rel="stylesheet" href="../shared/design-tokens.css"/>
+    <link rel="stylesheet" href="https://yuuqq.github.io/shared/design-tokens.css"/>
     <link rel="stylesheet" href="./styles.css"/>
+    <style>
+      .highlight-area{word-break:normal;overflow-wrap:anywhere;line-height:1.85}
+      .sample-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+      .sample-row button{background:#f8fbff;color:var(--accent,#2563eb);border:1px solid var(--line,#cfe0f1);border-radius:8px;padding:6px 10px;min-height:36px;width:auto}
+      @media (max-width: 600px) {
+        button#analyzeBtn, button#exportBtn, button#clearBtn, .sample-row button { width: auto; }
+      }
+    </style>
     <meta name="description" content="离线双语情感分析：中英文词库、进度条、逐句分析、情感词高亮、导出报告。"/>
     <link rel="manifest" href="./manifest.json"/>
   </head>
@@ -20,7 +29,7 @@
     <main id="main" aria-label="主内容区域" class="app">
       <header class="hero">
         <h1>离线情感分析仪</h1>
-        <p>中英双语词库，逐句分析情感倾向，高亮关键词，可导出分析报告。</p>
+        <p>中英双语词库，按句子打分看框架偏见。中性来自净分接近 0 的句子，不是 100 减剩余。</p>
       </header>
 
       <section class="card">
@@ -33,13 +42,18 @@
       <section class="split-grid">
         <article class="card">
           <label for="textInput">输入新闻文本（最多 3000 字）</label>
-          <textarea id="textInput" rows="14" placeholder="粘贴新闻报道…" aria-label="新闻文本输入"></textarea>
+          <div class="sample-row">
+            <button type="button" data-sample="official">政策通稿</button>
+            <button type="button" data-sample="probe">调查稿</button>
+            <button type="button" data-sample="disaster">灾害现场</button>
+          </div>
+          <textarea id="textInput" rows="14" placeholder="粘贴新闻报道，或点上方样稿…" aria-label="新闻文本输入"></textarea>
           <div class="btn-row">
             <button id="analyzeBtn" type="button">分析情感</button>
             <button id="exportBtn" type="button" class="export-btn" disabled>导出报告</button>
             <button id="clearBtn" type="button" class="clear-btn">清空</button>
           </div>
-          <p id="status" role="status" aria-live="polite">状态: 输入文本后点击分析</p>
+          <p id="status" role="status" aria-live="polite">状态: 点样稿或粘贴文本后点击分析</p>
 
           <div class="bars-section">
             <div class="bar-row">
@@ -78,7 +92,21 @@
     </nav>
     <script src="./pm-metrics.js" defer></script>
     <script src="./app.js" defer></script>
-    <script src="../shared/releases/v2.6/loader.js" data-modules="dark,cmd,toast,onboarding,pedagogy-p1,pedagogy-p2,nav,kbd"></script>
+    <script>
+    (function () {
+      var modules = "dark,cmd,toast,onboarding,pedagogy-p1,pedagogy-p2,nav,kbd";
+      var s = document.createElement("script");
+      s.src = "../shared/releases/v2.6/loader.js";
+      s.setAttribute("data-modules", modules);
+      s.onerror = function () {
+        var t = document.createElement("script");
+        t.src = "https://yuuqq.github.io/shared/releases/v2.6/loader.js";
+        t.setAttribute("data-modules", modules);
+        document.body.appendChild(t);
+      };
+      document.body.appendChild(s);
+    })();
+    </script>
     <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}</script>
   </body>
   </html>
