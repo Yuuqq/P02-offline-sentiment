@@ -1,106 +1,84 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📰</text></svg>" />
-  <title>P02 本地离线情感倾向分析仪</title>
-    <link rel="stylesheet" href="../shared/design-tokens.css" />
-<link rel="stylesheet" href="./modern-styles.css" />
-<link rel="stylesheet" href="./styles.css" />
-  <meta name="description" content="本地离线情感倾向分析仪。P02 本地离线情感倾向分析仪" />
-  <meta property="og:title" content="P02 本地离线情感倾向分析仪" />
-  <meta property="og:description" content="本地离线情感倾向分析仪 — 前端纯静态新闻工具" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://yuuqq.github.io/P02-offline-sentiment/" />
-  <link rel="manifest" href="./manifest.json" />
-<style media="print">
-.gnav,.pedagogy-panel,.explore-section,[class*="dark-toggle"],button[aria-label]{display:none!important}
-body{background:#fff!important;color:#000!important;font-size:11pt}
-.app,main,.container{box-shadow:none!important;border:none!important;padding:0!important}
-a{color:#000!important;text-decoration:underline}
-a[href]::after{content:" (" attr(href) ")";font-size:9pt;color:#666}
-@page{margin:2cm}
-</style>
-</head>
-<body>
-  <main aria-label="主内容区域" class="app">
-    <header class="hero">
-      <h1>本地离线情感倾向分析仪</h1>
-      <p>内置中英情感词典 + 否定/强调规则，本地即可分析，无需首次联网下载模型。</p>
-      <p class="privacy">隐私: 文本不会上传任何数据至服务器，分析在本地浏览器完成。</p>
-    </header>
+  <html lang="zh-CN" class="type-scale-v22">
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#2563eb">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="P02 离线情感分析仪">
+  <meta property="og:description" content="离线情感分析仪">
+    <title>P02 离线情感分析仪</title>
+    <link rel="stylesheet" href="../shared/design-tokens.css"/>
+    <link rel="stylesheet" href="./styles.css"/>
+    <meta name="description" content="离线双语情感分析：中英文词库、进度条、逐句分析、情感词高亮、导出报告。"/>
+    <link rel="manifest" href="./manifest.json"/>
+  </head>
+  <body>
+  <a href="#main" class="skip-link">跳到主内容 / Skip to main content</a>
+    <main id="main" aria-label="主内容区域" class="app">
+      <header class="hero">
+        <h1>离线情感分析仪</h1>
+        <p>中英双语词库，逐句分析情感倾向，高亮关键词，可导出分析报告。</p>
+      </header>
 
-    <section class="card">
-      <details class="teach-card" open>
-        <summary>🎓 情感分析与舆情监测</summary>
-        <p>情感分析（Sentiment Analysis）是自然语言处理的核心任务之一，用于判断文本的情感极性。在新闻业中，它广泛用于舆情监测、用户反馈分析、社交媒体情绪追踪等场景。</p>
-      </details>
-      <p style="margin-bottom:8px;font-size:13px;color:#666">点击下方示例快速体验：</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        <button type="button" class="example-btn" onclick="document.getElementById('textInput').value='The new public transit system has significantly improved commute times and reduced air pollution levels across the city, earning praise from residents and urban planners alike.'">😊 正面新闻</button>
-        <button type="button" class="example-btn" onclick="document.getElementById('textInput').value='The factory explosion killed three workers and injured dozens more. Investigators found that safety protocols had been systematically ignored for months despite repeated warnings.'">😞 负面新闻</button>
-        <button type="button" class="example-btn" onclick="document.getElementById('textInput').value='The annual report shows revenue remained flat compared to last year. The company plans to expand into new markets while maintaining current workforce levels.'">😐 中性报道</button>
-      </div>
-    </section>
+      <section class="card">
+        <details class="teach-card" open>
+          <summary>🎓 新闻情感分析与框架偏见</summary>
+          <p>相同事件的报道，因用词选择不同可产生截然不同的情感基调。情感分析可量化文本的正负倾向，帮助识别<strong>框架偏见</strong>（Framing Bias）。注意：本工具基于词袋模型，无法处理讽刺、双重否定等复杂语境，结论仅供参考。</p>
+        </details>
+      </section>
 
-    <section class="card">
-      <h2>本地分析引擎</h2>
-      <p class="hint">当前模式：内置双语情感词典。适合快速判断新闻段落、评论摘录或标题的情绪倾向。</p>
-      <div class="actions">
-        <button id="analyzeBtn" type="button" aria-label="analyze">分析文本</button>
-        <button id="clearBtn" type="button" aria-label="clear">清空</button>
-      </div>
-      <p id="status" role="status" aria-live="polite">状态: 已就绪（本地词典）</p>
-    </section>
+      <section class="split-grid">
+        <article class="card">
+          <label for="textInput">输入新闻文本（最多 3000 字）</label>
+          <textarea id="textInput" rows="14" placeholder="粘贴新闻报道…" aria-label="新闻文本输入" maxlength="3000"></textarea>
+          <div class="btn-row">
+            <button id="analyzeBtn" type="button">分析情感</button>
+            <button id="exportBtn" type="button" class="export-btn" disabled>导出报告</button>
+            <button id="clearBtn" type="button" class="clear-btn">清空</button>
+          </div>
+          <p id="status" role="status" aria-live="polite">状态: 输入文本后点击分析</p>
 
-    <section class="card">
-      <label for="textInput">新闻文本</label>
-      <textarea id="textInput" rows="10" placeholder="粘贴报道正文..."></textarea>
-      <p class="hint">说明: 默认对前 2500 字符分析，避免浏览器卡顿。</p>
-    </section>
+          <div class="bars-section">
+            <div class="bar-row">
+              <span class="bar-label">🟢 正面</span>
+              <div class="bar-track"><div id="posBar" class="bar-fill bar-pos"></div></div>
+              <span id="posVal" class="bar-val">0%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">🔴 负面</span>
+              <div class="bar-track"><div id="negBar" class="bar-fill bar-neg"></div></div>
+              <span id="negVal" class="bar-val">0%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">⚪ 中性</span>
+              <div class="bar-track"><div id="neutralBar" class="bar-fill bar-neu"></div></div>
+              <span id="neutralVal" class="bar-val">0%</span>
+            </div>
+          </div>
 
-    <section class="card">
-      <h2>分析结果</h2>
-      <div id="summary">等待分析...</div>
-      <div class="bars">
-        <div class="bar-row">
-          <span>Positive</span>
-          <div class="bar-shell"><i id="posBar"></i></div>
-          <strong id="posVal">0%</strong>
-        </div>
-        <div class="bar-row">
-          <span>Negative</span>
-          <div class="bar-shell"><i id="negBar"></i></div>
-          <strong id="negVal">0%</strong>
-        </div>
-      </div>
-    </section>
-  </main>
-  <script src="./pm-metrics.js" defer></script>
-<script src="./app.js" defer></script>
+          <div id="summary" class="summary-box"></div>
+        </article>
 
-  <!-- Privacy Notice -->
-  <div style="text-align:center;padding:12px 16px;font-size:12px;color:#888;border-top:1px solid #eee;margin-top:24px;">
-    🔒 隐私提示：本工具所有数据处理均在您的浏览器本地完成，不会上传任何数据至服务器。
-  </div>
+        <article class="card">
+          <label>情感词高亮</label>
+          <div id="highlightOutput" class="highlight-area"></div>
+          <label style="margin-top:14px">逐句情感分析（前12句）</label>
+          <ul id="sentenceList" class="sent-list"></ul>
+        </article>
+      </section>
+    </main>
 
-  <!-- Cross-Project Navigation -->
-  <nav aria-label="工具箱导航" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;font-size:13px;border-top:1px solid #e5e5e5;margin-top:16px;color:#666;">
-    <a href="https://yuuqq.github.io/journalism-toolbox/" style="text-decoration:none;">📋 工具箱导航</a>
-    <span style="opacity:.4">P02</span>
-  </nav>
-
-<script src="../shared/dark-toggle.js" defer></script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}</script>
-<script src="../shared/cmd-palette.js" defer></script>
-<script src="../shared/toast.js" defer></script>
-<script src="../shared/onboarding.js" defer></script>
-<script src="../shared/pedagogy-data-p1.js" defer></script>
-<script src="../shared/pedagogy-data-p2.js" defer></script>
-<script src="../shared/global-nav.js" defer></script>
-<script src="../shared/kbd-hints.js" defer></script>
-</body>
-</html>
-
-
+    <div style="text-align:center;padding:12px 16px;font-size:12px;color:#888;border-top:1px solid #eee;margin-top:24px;">🔒 所有分析均在浏览器本地完成，不上传任何数据。</div>
+    <nav style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;font-size:13px;border-top:1px solid #e5e5e5;margin-top:16px;color:#666;">
+      <a href="https://yuuqq.github.io/journalism-toolbox/" style="text-decoration:none;">📋 工具箱导航</a>
+      <span style="opacity:.4">P02</span>
+    </nav>
+    <script src="./pm-metrics.js" defer></script>
+    <script src="./app.js" defer></script>
+    <script src="../shared/releases/v2.6/loader.js" data-modules="dark,cmd,toast,onboarding,pedagogy-p1,pedagogy-p2,nav,kbd"></script>
+    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}</script>
+  </body>
+  </html>
