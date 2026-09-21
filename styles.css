@@ -31,7 +31,7 @@ body {
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 6px;
   padding: 14px;
   margin-bottom: 12px;
 }
@@ -73,7 +73,7 @@ textarea {
 
 button {
   border: 0;
-  border-radius: 999px;
+  border-radius: 4px;
   padding: 8px 14px;
   color: #fff;
   background: linear-gradient(135deg, #1e9e5e, #0b6b3a);
@@ -109,7 +109,7 @@ button:disabled {
 
 .bar-shell {
   height: 14px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: #e8f1ea;
   overflow: hidden;
   border: 1px solid #cfded4;
