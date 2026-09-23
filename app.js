@@ -19,10 +19,10 @@ const POSITIVE_TERMS = compileTerms([
   ["transparent", 0.9], ["resilient", 0.8], ["growth", 0.7], ["expand", 0.6],
   ["expanded", 0.7], ["maintain", 0.4], ["maintaining", 0.4], ["hope", 0.8],
   ["改善", 1.2], ["恢复", 0.9], ["支持", 0.8], ["透明", 0.9], ["稳定", 0.8],
-  ["合作", 0.8], ["发展", 0.7], ["创新", 0.9], ["成功", 1.1], ["公正", 0.9],
+  ["合作", 0.8], ["成功", 1.1], ["公正", 0.9],
   ["真实", 0.8], ["进步", 0.9], ["团结", 0.9], ["保障", 0.8], ["繁荣", 1.0],
-  ["友好", 0.7], ["积极", 0.8], ["健康", 0.7], ["和谐", 0.7], ["美好", 0.8],
-  ["优秀", 0.9], ["幸福", 0.8], ["开放", 0.7], ["包容", 0.7], ["尊重", 0.7]
+  ["友好", 0.7], ["积极", 0.8], ["和谐", 0.7], ["美好", 0.8],
+  ["优秀", 0.9], ["幸福", 0.8], ["包容", 0.7], ["尊重", 0.7]
 ]);
 
 const NEGATIVE_TERMS = compileTerms([
@@ -37,12 +37,17 @@ const NEGATIVE_TERMS = compileTerms([
   ["失控", 1.1], ["恐慌", 1.0], ["谣言", 0.8], ["欺骗", 1.1], ["风险", 0.9],
   ["腐败", 1.2], ["暴力", 1.2], ["污染", 0.9], ["争议", 0.7], ["抵制", 0.7],
   ["泄露", 1.0], ["操纵", 1.1], ["偏见", 0.8], ["威胁", 1.0], ["崩溃", 1.2],
-  ["混乱", 1.0], ["丑闻", 1.2], ["虚假", 1.0], ["焦虑", 0.8], ["压迫", 1.0]
+  ["混乱", 1.0], ["丑闻", 1.2], ["虚假", 1.0], ["焦虑", 0.8], ["压迫", 1.0],
+  ["担忧", 0.9], ["下滑", 0.9], ["失业", 1.0]
 ]);
 
 const NEGATION_CUES = [
-  "not", "no", "never", "without", "hardly", "barely", "未", "无", "没有", "并非", "不", "难以"
+  "not", "no", "never", "without", "hardly", "barely", "没有", "并非", "难以", "未"
 ];
+
+const BLOCKED_FOLLOWERS = {
+  创新: ["高", "低"]
+};
 
 const BOOSTER_CUES = [
   "very", "highly", "strongly", "significantly", "extremely", "greatly",
@@ -60,6 +65,8 @@ function setBars(pos, neg) {
   negBar.style.width = `${n.toFixed(1)}%`;
   posVal.textContent = `${p.toFixed(1)}%`;
   negVal.textContent = `${n.toFixed(1)}%`;
+  posBar.parentElement.setAttribute("aria-valuenow", p.toFixed(0));
+  negBar.parentElement.setAttribute("aria-valuenow", n.toFixed(0));
 }
 
 function escapeRegExp(value) {
@@ -98,10 +105,15 @@ function intensityLabel(score) {
   return "很低";
 }
 
+function strengthOf(score) {
+  if (score <= 0) return 0;
+  return Math.tanh(score / 4) * 100;
+}
+
 function analyzeText(rawText) {
   const sample = String(rawText || "").slice(0, MAX_ANALYZE_LENGTH);
   const normalized = sample.toLowerCase();
-  const segments = normalized.split(/[\n。！？!?；;]+/).map((part) => part.trim()).filter(Boolean);
+  const segments = normalized.split(/[\n。！？!?；;]+|(?<!\d)\.(?=\s|$)/).map((part) => part.trim()).filter(Boolean);
 
   const result = {
     positiveScore: 0,
@@ -116,9 +128,11 @@ function analyzeText(rawText) {
       entry.regex.lastIndex = 0;
       let match;
       while ((match = entry.regex.exec(segment)) !== null) {
-        const context = segment.slice(Math.max(0, match.index - 18), match.index);
+        const follower = segment[match.index + match[0].length] || "";
+        if ((BLOCKED_FOLLOWERS[entry.term] || []).includes(follower)) continue;
+        const context = segment.slice(Math.max(0, match.index - 6), match.index);
         const multiplier = hasCue(context, BOOSTER_CUES) ? 1.35 : 1;
-        const inverted = hasCue(context, NEGATION_CUES);
+        const inverted = !/[，,。！？!?；;：:、]/.test(context) && hasCue(context, NEGATION_CUES);
         const effectiveType = inverted ? (baseType === "positive" ? "negative" : "positive") : baseType;
         const score = entry.weight * multiplier;
         if (effectiveType === "positive") {
@@ -141,19 +155,13 @@ function analyzeText(rawText) {
   });
 
   const total = result.positiveScore + result.negativeScore;
-  if (!total) {
-    return {
-      ...result,
-      posPct: 50,
-      negPct: 50,
-      tendency: "整体接近中性"
-    };
+  const posPct = strengthOf(result.positiveScore);
+  const negPct = strengthOf(result.negativeScore);
+  let tendency = "情绪线索很弱，接近中性";
+  if (total >= 1.2) {
+    const gap = Math.abs(result.positiveScore - result.negativeScore) / total;
+    tendency = gap < 0.25 ? "正负线索接近，整体接近中性" : result.positiveScore > result.negativeScore ? "整体偏正向" : "整体偏负向";
   }
-
-  const posPct = (result.positiveScore / total) * 100;
-  const negPct = (result.negativeScore / total) * 100;
-  const delta = Math.abs(posPct - negPct);
-  const tendency = delta < 12 ? "整体接近中性" : posPct > negPct ? "整体偏正向" : "整体偏负向";
 
   return {
     ...result,
@@ -176,7 +184,7 @@ function updateSummary(result) {
   }
 
   summaryEl.textContent =
-    `${result.tendency}。正向线索 ${result.positiveHits.length} 次，负向线索 ${result.negativeHits.length} 次，情绪强度 ${intensityLabel(result.positiveScore + result.negativeScore)}。` +
+    `${result.tendency}。正向线索 ${result.positiveHits.length} 次，负向线索 ${result.negativeHits.length} 次，情绪强度 ${intensityLabel(result.positiveScore + result.negativeScore)}。两条柱是各自的线索强度，不是占比，加起来不必是 100%。` +
     (parts.length ? ` ${parts.join("；")}。` : "");
 }
 

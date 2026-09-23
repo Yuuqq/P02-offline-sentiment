@@ -21,6 +21,10 @@ body {
     var(--bg);
 }
 
+:root[data-theme="dark"] body {
+  background: var(--bg);
+}
+
 .app {
   max-width: 980px;
   margin: 0 auto;
@@ -41,7 +45,7 @@ body {
 }
 
 .privacy {
-  color: #375c45;
+  color: var(--ink-secondary, #375c45);
 }
 
 label {
