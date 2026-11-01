@@ -65,5 +65,5 @@
 
 ---
 
-*本项目是 [新闻素养工具箱](https://yuuqq.github.io/journalism-toolbox/) 的第 02 号工具。*
+*本项目是 [新闻实验工具](../P00-dashboard/) 的第 02 号工具。*
 # Force redeploy Thu, Apr 23, 2026  2:29:20 PM
